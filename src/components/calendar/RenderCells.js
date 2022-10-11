@@ -13,16 +13,23 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
-
-    const rows = [];
+    const [rows, setRows] = useState([]);
     let days = [];
     let day = startDate;
     let formattedDate = '';
+    useEffect(()=>{
+        console.log(monthStart)
+        console.log(monthEnd)
+        console.log(startDate)
+        console.log(endDate)
+    },[])
+    const getDay = () =>{
 
+    }
     while (day <= endDate) {
         for (let i = 0; i < 7; i++) {
             formattedDate = format(day, 'd');
-            const cloneDay = day;
+            let cloneDay = day;
             days.push(
                 <Card
                     className={`col cell ${!isSameMonth(day, monthStart)
@@ -49,11 +56,13 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
             );
             day = addDays(day, 1);
         }
-        rows.push(
+        let list = [...rows];
+        list.push(
             <div className="row" key={day}>
                 {days}
             </div>,
         );
+        setRows(list);
         days = [];
     }
     return <div className="body">{rows}</div>;
