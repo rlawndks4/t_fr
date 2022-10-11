@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import { format, addMonths, subMonths } from 'date-fns';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 import { isSameMonth, isSameDay, addDays, parse } from 'date-fns';
+import styled from "styled-components";
 
+const Card = styled.div`
+
+`
 const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
@@ -20,7 +24,7 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
             formattedDate = format(day, 'd');
             const cloneDay = day;
             days.push(
-                <div
+                <Card
                     className={`col cell ${!isSameMonth(day, monthStart)
                             ? 'disabled'
                             : isSameDay(day, selectedDate)
@@ -41,7 +45,7 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
                     >
                         {formattedDate}
                     </span>
-                </div>,
+                </Card>,
             );
             day = addDays(day, 1);
         }

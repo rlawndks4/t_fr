@@ -25,7 +25,7 @@ const Headers = () => {
     const location = useLocation();
     const [display, setDisplay] = useState(false);
     const [auth, setAuth] = useState({})
-    const ignoreList = ['/', '/login', '/register'];
+    const ignoreList = ['/', '/login', '/register','/setting'];
     useEffect(() => {
 
         if (localStorage.getItem('auth')) {
@@ -56,7 +56,7 @@ const Headers = () => {
                         <div style={{ width: '270px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <BsBarChartLineFill style={{ cursor: 'pointer' }} />
                             <FaBell style={{ cursor: 'pointer' }} />
-                            <AiFillSetting style={{ cursor: 'pointer' }} />
+                            <AiFillSetting style={{ cursor: 'pointer' }}  onClick={()=>navigate('/setting')}/>
                             {
                                 auth ?
                                     <LogoutButton onClick={onLogout}>LOGOUT</LogoutButton>

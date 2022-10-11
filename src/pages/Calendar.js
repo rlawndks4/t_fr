@@ -26,6 +26,7 @@ const Calendar = () => {
         setCurrentMonth(addMonths(currentMonth, 1));
     };
     const onDateClick = (day) => {
+        console.log(day)
         setSelectedDate(day);
     };
     return (
