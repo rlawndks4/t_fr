@@ -1,0 +1,22 @@
+.login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: beige;
+}
+
+.login__container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 30px;
+  max-width: 500px;
+  margin:auto ;
+  background-color: wheat;
+}
+
+.login div {
+  margin-top: 7px;
+}
