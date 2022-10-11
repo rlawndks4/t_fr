@@ -8,7 +8,7 @@ import { Wrappers, ContentWrapper } from "../components/UserContentTemplete";
 import LeftContent from "../components/LeftContent";
 import styled from "styled-components";
 import { GrNext, GrPrevious } from 'react-icons/gr'
-
+import beforeImg from '../assets/before.svg'
 const Content = styled.div`
 border-bottom: 1px solid ${props => props.theme.color.background1};
 height:64px;
@@ -39,7 +39,7 @@ export default function Setting() {
           </Content>
           <Content style={{ cursor: 'pointer' }} onClick={() => navigate(-1)}>
             <div>뒤로 가기</div>
-            <GrPrevious />
+            <img src={beforeImg} style={{height:'24px'}}/>
           </Content>
         </div>
 
