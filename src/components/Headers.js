@@ -28,13 +28,10 @@ const Headers = () => {
     const ignoreList = ['/', '/login', '/register'];
     useEffect(() => {
 
-        if (!localStorage.getItem('auth')) {
-            navigate('/login');
-        } else {
+        if (localStorage.getItem('auth')) {
             let auth = JSON.parse(localStorage.getItem('auth'));
             setAuth(auth);
-
-        }
+        } 
         if (ignoreList.includes(location.pathname)) {
             setDisplay(false);
         } else {
