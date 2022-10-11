@@ -10,6 +10,7 @@ const RenderHeader = ({ currentMonth, prevMonth, nextMonth }) => {
     function handleClick(e) {
         window.location.href = "/setting"
     }
+    console.log(currentMonth)
     return (
         <div className="header row">
             <div className="col col-start">

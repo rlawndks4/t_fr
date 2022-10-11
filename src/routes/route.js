@@ -1,5 +1,5 @@
-import Login from "../pages/Login.js";
-import Register from "../pages/Register";
+import Login from "../pages/Auth/Login.js";
+import Register from "../pages/Auth/Register";
 import Dashboard from "../pages/Dashboard";
 import Setting from "../pages/Setting";
 import Calendar from "../pages/Calendar";
