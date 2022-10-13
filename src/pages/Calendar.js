@@ -52,7 +52,7 @@ font-size: 20px;
 align-items:center;
 margin-right:auto;
 padding:0 4px;
-border-radius:2px;
+border-radius:4px;
 margin-left:4px;
 `
 
