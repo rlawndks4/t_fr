@@ -5,15 +5,22 @@ display:flex;
 width:100%;
 background:#fff;
 min-height:100vh;
+@media screen and (max-width: 800px) {
+}
 `
 export const CalendarWrappers = styled.div`
 margin-top:80px;
+display:flex;
+@media screen and (max-width: 1000px) {
+    flex-direction:column;
+}
 `
 export const ContentWrapper = styled.div`
 display:flex;
 width:${props=>props.width}%;
 @media screen and (max-width: 800px) {
     width:100%;
+    margin-top:7rem;
 }
 `
 export const LogoutButton = styled.button`

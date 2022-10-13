@@ -22,11 +22,15 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('auth') && JSON.parse(localStorage.getItem('auth'))?.pk > 0) {
-      navigate('/calendar');
-    } else {
-      localStorage.removeItem('auth');
+    async function isUser(){
+      const {data:response} = await axios.get('/api/auth')
+      if(response.pk>0){
+        navigate('/calendar');
+      }else{
+        localStorage.removeItem('auth');
+      }
     }
+    
   }, []);
   const onLogin = async () => {
     if (!email || !password) {

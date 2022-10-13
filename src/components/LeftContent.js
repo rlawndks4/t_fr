@@ -2,7 +2,7 @@ import { FaRegLaugh, FaRegMeh } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const Wrappers = styled.div`
-width:35%;
+width:${props=>props.width}%;
 height:100vh;
 display:flex;
 text-align:center;
@@ -10,23 +10,52 @@ background:${props=>props.theme.color.background4};
 color:${props=>props.theme.color.background1};
 font-size:50px;
 @media screen and (max-width: 800px) {
-    display:none;
+    position:fixed;
+    height:5rem;
+    width:100%;
+    font-size:24px;
+}
+`
+const TextContent = styled.div`
+display: flex;
+flex-direction: column;
+margin: auto;
+@media screen and (max-width: 800px) {
+    flex-direction: row;
+    align-items:center;
+}
+`
+const IconContainer = styled.div`
+display: flex;
+justify-content:space-between;
+font-size:69px;
+width:160px;
+margin:0 auto;
+@media screen and (max-width: 800px) {
+    font-size:36px;
+    width:78px;
+    margin-right:8px;
+}
+`
+const Text = styled.div`
+@media screen and (max-width: 800px) {
+    margin-right:8px;
 }
 `
 const LeftContent = (props) => {
     let {width} = props;
     return (
         <>
-            <Wrappers style={{width:`${width?width:'35'}%`}}>
-                <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}>
-                    <div style={{ display: 'flex',justifyContent:'space-between',fontSize:'69px',width:'160px',margin:'0 auto' }}>
+            <Wrappers width={width}>
+                <TextContent>
+                    <IconContainer>
                         <FaRegLaugh /><FaRegMeh />
-                    </div>
-                    <div>To do</div>
-                    <div>or</div>
-                    <div>Not to do</div>
-                    <div>List</div>
-                </div>
+                    </IconContainer>
+                    <Text>To do</Text>
+                    <Text>or</Text>
+                    <Text>Not to do</Text>
+                    <Text>List</Text>
+                </TextContent>
             </Wrappers>
         </>
     )
