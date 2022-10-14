@@ -11,6 +11,7 @@ min-height:100vh;
 export const CalendarWrappers = styled.div`
 margin-top:80px;
 display:flex;
+position:relative;
 @media screen and (max-width: 1000px) {
     flex-direction:column;
 }

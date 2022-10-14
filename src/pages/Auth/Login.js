@@ -22,15 +22,15 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function isUser(){
-      const {data:response} = await axios.get('/api/auth')
-      if(response.pk>0){
+    async function isUser() {
+      const { data: response } = await axios.get('/api/auth')
+      if (response.pk > 0) {
         navigate('/calendar');
-      }else{
+      } else {
         localStorage.removeItem('auth');
       }
     }
-    
+
   }, []);
   const onLogin = async () => {
     if (!email || !password) {
@@ -50,6 +50,11 @@ export default function Login() {
       }
     }
   }
+  const onKeyPressPw = (e) => {
+    if (e.key == 'Enter') {
+      onLogin();
+    }
+  }
   return (
     <Wrappers>
       <LeftContent width={50} />
@@ -65,7 +70,8 @@ export default function Login() {
             <InputTitle>PW</InputTitle>
             <Input type={'password'} onChange={(event) => {
               setPassword(event.target.value);
-            }} />
+            }}
+              onKeyPress={onKeyPressPw} />
           </InputContainer>
           <div style={{ width: '80%', margin: '8px auto', textAlign: 'end' }}>
             처음 오셨나요? <Link to="/register">회원가입</Link>

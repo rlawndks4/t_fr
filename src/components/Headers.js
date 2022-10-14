@@ -19,6 +19,7 @@ justify-content:space-between;
 align-items:center;
 font-size: 26px;
 font-weight: 600;
+z-index:10;
 `
 const Headers = () => {
     const navigate = useNavigate();
