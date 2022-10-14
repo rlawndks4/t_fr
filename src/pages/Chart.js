@@ -164,7 +164,7 @@ const Chart = () => {
                             <ChartContainerTitle>To-Do 달성률(%)</ChartContainerTitle>
                             <ChartContainer>
                                 <div style={{ width: '90%', margin: '2px auto', display: 'flex' }}>
-                                    <div style={{ width: '22%', textAlign: 'right', minWidth: '61px' }}>0</div>
+                                    <div style={{ width: '22%', textAlign: 'right', minWidth: '66px' }}>0</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>25</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>50</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>75</div>
@@ -185,7 +185,7 @@ const Chart = () => {
                             <ChartContainerTitle>Not-To-Do 달성률(%)</ChartContainerTitle>
                             <ChartContainer>
                                 <div style={{ width: '90%', margin: '2px auto', display: 'flex' }}>
-                                    <div style={{ width: '22%', textAlign: 'right', minWidth: '61px' }}>0</div>
+                                    <div style={{ width: '22%', textAlign: 'right', minWidth: '66px' }}>0</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>25</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>50</div>
                                     <div style={{ width: '19.5%', textAlign: 'right' }}>75</div>
