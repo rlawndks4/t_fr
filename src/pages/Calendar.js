@@ -167,7 +167,6 @@ const Calendar = () => {
     }, [])
     useEffect(() => {
         getTodoList();
-        console.log(selectedDate)
     }, [selectedDate])
 
     const getTodoList = async () => {
@@ -177,7 +176,6 @@ const Calendar = () => {
             select_date: selectedDate,
             user_pk: auth.pk
         })
-        console.log(response)
         let list = response.data ?? [];
         let to_do_obj = {};
         let not_to_do_obj = {};
@@ -244,7 +242,6 @@ const Calendar = () => {
                     lng: lng,
                     user_pk: auth.pk
                 })
-                console.log(response)
                 if (response.result > 0) {
                     toast("저장이 완료되었습니다!");
                     setLat(-1);
@@ -262,14 +259,12 @@ const Calendar = () => {
         setLng(obj.lng)
     }
     const onChangeCheck = async (e) => {
-        console.log(e.target.checked)
         let pk = parseInt(e.target.name.substring(6, e.target.name.length));
         let obj = {
             pk: pk,
             status: e.target.checked ? 1 : 0
         }
         const { data: response } = await axios.post('/api/changestatus', obj)
-        console.log(response)
     }
     return (
         <CalendarWrappers>
@@ -396,7 +391,6 @@ const Calendar = () => {
                         <ModalTitle>장소</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ModalInput className="place" placeholder="도로명주소를 입력해주세요." onKeyPress={(e) => {
-                                console.log(e.key)
                                 if (e.key == 'Enter') {
                                     geocoding();
                                 }

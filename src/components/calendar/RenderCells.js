@@ -26,8 +26,6 @@ const RenderCells = (props) => {
     const endDate = endOfWeek(monthEnd);
     const [rows, setRows] = useState([]);
     useEffect(() => {
-        console.log(endDate)
-        console.log(format(endDate, 'yyMMdd'))
         let list = [];
         let day = startDate;
         format(day, 'yyyy-MM-dd');
@@ -45,7 +43,6 @@ const RenderCells = (props) => {
             }
         }
         list.pop();
-        console.log(list)
         setRows(list);
     }, [currentMonth])
     const returnColor = () => {

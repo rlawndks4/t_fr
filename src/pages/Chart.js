@@ -101,7 +101,6 @@ const Chart = () => {
                 list: result,
                 user_pk: auth?.pk ?? 0
             })
-            console.log(response)
             let to_do_obj = {};
             let not_to_do_obj = {};
             let list = response.data ?? [];
