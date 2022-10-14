@@ -16,7 +16,8 @@ import addImg from '../assets/add.svg'
 import axios from "axios";
 import { AiOutlineSearch } from 'react-icons/ai'
 import $ from 'jquery'
-const geocodingUrl = "/api/map-geocode/v2/geocode";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TodoList = styled.div`
 width:40vw;
@@ -66,7 +67,7 @@ background:#00000066;
 width:100vw;
 height:110vh;
 top:-10vh;
-display: flex;
+display: ${props=>props.display};
 z-index:15;
 `
 const ModalContentContainer = styled.div`
@@ -140,7 +141,10 @@ const Calendar = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const [modalDisplay, setModalDisplay] = useState("flex")
+    const [modalDisplay, setModalDisplay] = useState("none")
+    const [lng, setLng] = useState(-1);
+    const [lat, setLat] = useState(-1);
+    const [placeName, setPlaceName] = useState("")
     const [toDoList, setTodoList] = useState({
 
     })
@@ -182,6 +186,11 @@ const Calendar = () => {
 
     useEffect(() => {
         setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
+        $('.modal-container').on('click', function (e) {
+            if($(e.target).parents('.modal-content-container').length < 1){
+                setModalDisplay("none");
+            }
+        });
     }, [])
     useEffect(() => {
         async function fetchPost() {
@@ -198,22 +207,57 @@ const Calendar = () => {
         setCurrentMonth(addMonths(currentMonth, 1));
     };
     const onDateClick = (year, month, date, format) => {
-        console.log(year)
-        console.log(month)
-        console.log(date)
         setSelectedDate(format)
-
     };
     const onChangeModalDispplay = () => {
-
+        if(modalDisplay=="flex"){
+            setModalDisplay("none")
+        }else{
+            setModalDisplay("flex")
+        }
     }
     const geocoding = async () => {
-        console.log('asdsa')
-        const { date: response } = await axios.post('/api/getaddressbytext', {
+        const { data: response } = await axios.post('/api/getaddressbytext', {
             text: $('.place').val()
-        })
-        console.log(response)
-        
+        });
+        setAddressList(response.data ?? []);
+    }
+    const addTodoList = async () => {
+        if (!$('.title').val()) {
+            alert('제목을 입력해 주세요.');
+        } else if (!$('.start-time').val() || !$('.end-time').val()) {
+            alert('시간을 설정해 주세요.');
+        } else if (lat == -1 && lng == -1) {
+            alert('장소를 설정해 주세요.');
+        } else {
+            if (window.confirm("저장 하시겠습니까?")) {
+                let auth = JSON.parse(localStorage.getItem('auth'));
+                const { data: response } = await axios.post('/api/addtodo', {
+                    title: $('.title').val(),
+                    select_date: selectedDate,
+                    start_time: $('.start-time').val(),
+                    end_time: $('.end-time').val(),
+                    tag: $('.tag').val(),
+                    minute_ago: $('.minute-ago').val(),
+                    place: placeName,
+                    lat: lat,
+                    lng: lng,
+                    user_pk: auth.pk
+                })
+                console.log(response)
+                if (response.result > 0) {
+                    toast("저장이 완료되었습니다!");
+                    setLat(-1);
+                    setLng(-1);
+                }
+            }
+        }
+
+    }
+    const setPlace = (obj) =>{
+        setPlaceName(obj.road_address);
+        setLat(obj.lat)
+        setLng(obj.lng)
     }
     return (
         <CalendarWrappers>
@@ -269,8 +313,8 @@ const Calendar = () => {
                 </div>
                 <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={onChangeModalDispplay} />
             </TodoList>
-            <ModalContainer display={modalDisplay} onClick={() => { setModalDisplay("none") }}>
-                <ModalContentContainer className="">
+            <ModalContainer display={modalDisplay} className="modal-container">
+                <ModalContentContainer className="modal-content-container">
                     <ModalContent>
                         <ModalTitle>제목</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -280,11 +324,11 @@ const Calendar = () => {
                     <ModalContent>
                         <ModalTitle>일시</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalDateInput type="date" />
-                            <ModalDateInput type="time" />
+                            <ModalDateInput type="date" value={selectedDate} />
+                            <ModalDateInput type="time" className="start-time" />
                             <div style={{ width: '2%' }}>~</div>
-                            <ModalDateInput type="date" />
-                            <ModalDateInput type="time" />
+                            <ModalDateInput type="date" value={selectedDate} />
+                            <ModalDateInput type="time" className="end-time" />
                         </div>
 
                     </ModalContent>
@@ -293,11 +337,11 @@ const Calendar = () => {
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ModalSelect className="tag">
                                 <option value={1}>과제</option>
-                                <option value={1}>공부</option>
-                                <option value={1}>약속</option>
-                                <option value={1}>지각</option>
-                                <option value={1}>결석</option>
-                                <option value={1}>핸드폰</option>
+                                <option value={2}>공부</option>
+                                <option value={3}>약속</option>
+                                <option value={4}>지각</option>
+                                <option value={5}>결석</option>
+                                <option value={6}>핸드폰</option>
                             </ModalSelect>
                         </div>
 
@@ -317,20 +361,39 @@ const Calendar = () => {
                     <ModalContent>
                         <ModalTitle>장소</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalInput className="place" onKeyPress={(e)=>{
+                            <ModalInput className="place" onKeyPress={(e) => {
                                 console.log(e.key)
-                                if(e.key=='Enter'){
+                                if (e.key == 'Enter') {
                                     geocoding();
                                 }
                             }} />
                             <AiOutlineSearch style={{ padding: '4px', fontSize: '20px', cursor: 'pointer' }} onClick={geocoding} />
                         </div>
                     </ModalContent>
+                    {addressList.length > 0 ?
+                        <>
+                            <ModalContent style={{ flexDirection: 'column' }}>
+                                <div>
+                                    
+                                </div>
+                                {addressList.map((item, idx) => (
+                                    <>
+                                    <div onClick={()=>{setPlace(item)}}>{item.road_address}</div>
+                                    </>
+                                ))}
+                            </ModalContent>
+                        </>
+                        :
+                        <>
+                        </>}
+
+
                     <ModalContent>
-                        <LogoutButton style={{ borderRadius: '50px', margin: '64px auto' }}>일정추가</LogoutButton>
+                        <LogoutButton style={{ borderRadius: '50px', margin: '64px auto' }} onClick={addTodoList}>일정추가</LogoutButton>
                     </ModalContent>
                 </ModalContentContainer>
             </ModalContainer>
+            <ToastContainer />
         </CalendarWrappers>
     );
 };
