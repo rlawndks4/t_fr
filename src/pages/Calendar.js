@@ -13,6 +13,11 @@ import subjectImg from '../assets/subject.svg';
 import notImg from '../assets/not.svg';
 import theme from "../styles/theme";
 import addImg from '../assets/add.svg'
+import axios from "axios";
+import { AiOutlineSearch } from 'react-icons/ai'
+import $ from 'jquery'
+const geocodingUrl = "/api/map-geocode/v2/geocode";
+
 const TodoList = styled.div`
 width:40vw;
 min-height:90vh;
@@ -76,7 +81,7 @@ width:40vw;
 margin:20vh 8px auto auto;
 @media screen and (max-width: 1000px) {
     width:90%;
-    margin:20vh auto 0 auto;
+    margin:20vh auto auto auto;
 }
 `
 const ModalContent = styled.div`
@@ -142,6 +147,7 @@ const Calendar = () => {
     const [notToDoList] = useState({
 
     })
+    const [addressList, setAddressList] = useState([])
     const to_do_list = [
         {
             title: "과제",
@@ -198,6 +204,17 @@ const Calendar = () => {
         setSelectedDate(format)
 
     };
+    const onChangeModalDispplay = () => {
+
+    }
+    const geocoding = async () => {
+        console.log('asdsa')
+        const { date: response } = await axios.post('/api/getaddressbytext', {
+            text: $('.place').val()
+        })
+        console.log(response)
+        
+    }
     return (
         <CalendarWrappers>
             <div className="calendar">
@@ -250,9 +267,9 @@ const Calendar = () => {
                         ))}
                     </List>
                 </div>
-                <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} />
+                <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={onChangeModalDispplay} />
             </TodoList>
-            <ModalContainer display={modalDisplay} onClick={()=>{setModalDisplay("none")}}>
+            <ModalContainer display={modalDisplay} onClick={() => { setModalDisplay("none") }}>
                 <ModalContentContainer className="">
                     <ModalContent>
                         <ModalTitle>제목</ModalTitle>
@@ -300,7 +317,13 @@ const Calendar = () => {
                     <ModalContent>
                         <ModalTitle>장소</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalInput className="place" />
+                            <ModalInput className="place" onKeyPress={(e)=>{
+                                console.log(e.key)
+                                if(e.key=='Enter'){
+                                    geocoding();
+                                }
+                            }} />
+                            <AiOutlineSearch style={{ padding: '4px', fontSize: '20px', cursor: 'pointer' }} onClick={geocoding} />
                         </div>
                     </ModalContent>
                     <ModalContent>
