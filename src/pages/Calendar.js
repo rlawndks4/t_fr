@@ -7,10 +7,6 @@ import RenderDays from "../components/calendar/RenderDays";
 import RenderHeader from "../components/calendar/RenderHeader";
 import { CalendarWrappers, LogoutButton } from "../components/UserContentTemplete";
 import styled from "styled-components";
-import studyImg from '../assets/study.svg';
-import promiseImg from '../assets/promise.svg';
-import subjectImg from '../assets/subject.svg';
-import notImg from '../assets/not.svg';
 import theme from "../styles/theme";
 import addImg from '../assets/add.svg'
 import axios from "axios";
@@ -18,7 +14,8 @@ import { AiOutlineSearch } from 'react-icons/ai'
 import $ from 'jquery'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { MdCancel } from 'react-icons/md'
+import Loading from "../components/Loading";
 const TodoList = styled.div`
 width:40vw;
 min-height:90vh;
@@ -46,8 +43,9 @@ flex-direction:column;
 `
 const Content = styled.div`
 display:flex;
-flex-direction:column;
-min-height:64px;
+align-items:center;
+margin:2px 0;
+font-size:16px;
 `
 const Hash = styled.div`
 background:#C5B6A3;
@@ -64,25 +62,32 @@ margin-left:4px;
 const ModalContainer = styled.div`
 position:fixed;
 background:#00000066;
-width:100vw;
+width:110vw;
 height:110vh;
 top:-10vh;
-display: ${props=>props.display};
+right:0;
+display: ${props => props.display};
 z-index:15;
 `
 const ModalContentContainer = styled.div`
 background:${props => props.theme.color.background4};
-margin:auto;
 background: #ECE8D9;
 box-shadow: -7px 0px 4px rgba(0, 0, 0, 0.15), 7px 7px 4px rgba(0, 0, 0, 0.15), inset 0px 7px 4px rgba(0, 0, 0, 0.15);
 border-radius: 30px;
 display:flex;
 flex-direction:column;
 width:40vw;
-margin:20vh 8px auto auto;
+position:fixed;
+right: 16px;
+top:5vh;
 @media screen and (max-width: 1000px) {
-    width:90%;
-    margin:20vh auto auto auto;
+    width:95%;
+    top:5vh;
+}
+@media screen and (max-width: 500px) {
+    top:2vh;
+    width:92%;
+
 }
 `
 const ModalContent = styled.div`
@@ -93,6 +98,7 @@ align-items:center;
 @media screen and (max-width: 500px) {
     flex-direction:column;
     align-items:flex-start;
+    margin:2vh auto 0 auto;
 }
 `
 const ModalTitle = styled.div`
@@ -120,6 +126,10 @@ outline:none;
 font-weight: 300;
 margin:0 0.5vw;
 width:6vw;
+background:#fff;
+&::placeholder {
+    color: #ccc;
+}
 @media screen and (max-width: 1000px) {
     width:15vw;
 }
@@ -138,68 +148,57 @@ margin:0 0.5vw;
 `
 const Calendar = () => {
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [modalDisplay, setModalDisplay] = useState("none")
     const [lng, setLng] = useState(-1);
     const [lat, setLat] = useState(-1);
     const [placeName, setPlaceName] = useState("")
-    const [toDoList, setTodoList] = useState({
-
-    })
-    const [notToDoList] = useState({
-
-    })
+    const [toDoObj, setToDoObj] = useState({});
+    const [notToDoObj, setNotToDoObj] = useState({});
     const [addressList, setAddressList] = useState([])
-    const to_do_list = [
-        {
-            title: "과제",
-            icon: subjectImg
-        },
-        {
-            title: "공부",
-            icon: studyImg
-        },
-        {
-            title: "약속",
-            icon: promiseImg
-        },
-    ];
-    const not_to_do_list = [
-        {
-            title: "지각",
-            icon: notImg
-        },
-        {
-            title: "결석",
-            icon: notImg
-        },
-        {
-            title: "핸드폰",
-            icon: notImg
-        }
-    ];
+    const [loading, setLoading] = useState(false);
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
     useEffect(() => {
         setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
-        $('.modal-container').on('click', function (e) {
-            if($(e.target).parents('.modal-content-container').length < 1){
-                setModalDisplay("none");
-            }
-        });
+
     }, [])
     useEffect(() => {
-        async function fetchPost() {
-            let auth = JSON.parse(localStorage.getItem('auth'))?.pk ?? 0;
-
-        }
-        fetchPost();
+        getTodoList();
         console.log(selectedDate)
     }, [selectedDate])
+
+    const getTodoList = async () => {
+        setLoading(true);
+        let auth = JSON.parse(localStorage.getItem('auth'));
+        const { data: response } = await axios.post('/api/gettodolist', {
+            select_date: selectedDate,
+            user_pk: auth.pk
+        })
+        console.log(response)
+        let list = response.data ?? [];
+        let to_do_obj = {};
+        let not_to_do_obj = {};
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].category == 0) {//to do
+                if (!to_do_obj[list[i].tag]) {
+                    to_do_obj[list[i].tag] = [];
+                }
+                to_do_obj[list[i].tag].push(list[i])
+
+            } else {//not to do
+                if (!not_to_do_obj[list[i].tag]) {
+                    not_to_do_obj[list[i].tag] = [];
+                }
+                not_to_do_obj[list[i].tag].push(list[i])
+            }
+        }
+        setToDoObj(to_do_obj);
+        setNotToDoObj(not_to_do_obj);
+        setTimeout(() => setLoading(false), 1000);
+    }
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
     };
@@ -210,9 +209,9 @@ const Calendar = () => {
         setSelectedDate(format)
     };
     const onChangeModalDispplay = () => {
-        if(modalDisplay=="flex"){
+        if (modalDisplay == "flex") {
             setModalDisplay("none")
-        }else{
+        } else {
             setModalDisplay("flex")
         }
     }
@@ -234,6 +233,7 @@ const Calendar = () => {
                 let auth = JSON.parse(localStorage.getItem('auth'));
                 const { data: response } = await axios.post('/api/addtodo', {
                     title: $('.title').val(),
+                    category: $('.category').val(),
                     select_date: selectedDate,
                     start_time: $('.start-time').val(),
                     end_time: $('.end-time').val(),
@@ -249,15 +249,27 @@ const Calendar = () => {
                     toast("저장이 완료되었습니다!");
                     setLat(-1);
                     setLng(-1);
+                    getTodoList();
+                    onChangeModalDispplay();
                 }
             }
         }
 
     }
-    const setPlace = (obj) =>{
+    const setPlace = (obj) => {
         setPlaceName(obj.road_address);
         setLat(obj.lat)
         setLng(obj.lng)
+    }
+    const onChangeCheck = async (e) => {
+        console.log(e.target.checked)
+        let pk = parseInt(e.target.name.substring(6, e.target.name.length));
+        let obj = {
+            pk: pk,
+            status: e.target.checked ? 1 : 0
+        }
+        const { data: response } = await axios.post('/api/changestatus', obj)
+        console.log(response)
     }
     return (
         <CalendarWrappers>
@@ -274,60 +286,89 @@ const Calendar = () => {
                     onDateClick={onDateClick}
                 />
             </div>
-            <TodoList>
-                <div style={{ width: '100%', display: 'flex', height: '88px', color: theme.color.font2 }}>
-                    <Title>To do List</Title>
-                    <Title style={{ display: 'flex' }}>
-                        <div style={{ display: 'flex', margin: '0 auto' }}>
-                            <p style={{ margin: '0 4px 0 0', textDecoration: 'underline' }}>Not</p> <div>To do List</div>
+            {loading ?
+                <>
+                    <Loading />
+                </>
+                :
+                <>
+                    <TodoList>
+                        <div style={{ width: '100%', display: 'flex', height: '88px', color: theme.color.font2 }}>
+                            <Title>To do List</Title>
+                            <Title style={{ display: 'flex' }}>
+                                <div style={{ display: 'flex', margin: '0 auto' }}>
+                                    <p style={{ margin: '0 4px 0 0', textDecoration: 'underline' }}>Not</p> <div>To do List</div>
+                                </div>
+                            </Title>
                         </div>
-                    </Title>
-                </div>
-                <div style={{ width: '100%', display: 'flex' }}>
-                    <List style={{ borderRight: '2px dashed #93816D' }}>
-                        {to_do_list.map((item) => (
-                            <>
-                                <Hash>
-                                    <div>#{item.title}</div>
-                                    <img src={item.icon} style={{ height: '20px', marginLeft: '4px' }} />
-                                </Hash>
-                                <Content>
+                        <div style={{ width: '100%', display: 'flex' }}>
+                            <List style={{ borderRight: '2px dashed #93816D' }}>
+                                {Object.keys(toDoObj).map((item, idx) => (
+                                    <>
+                                        <Hash>
+                                            <div>#{item}</div>
+                                        </Hash>
+                                        {toDoObj[item].map((itm, idx) => (
+                                            <>
+                                                <Content>
+                                                    <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
+                                                    <div style={{ marginBottom: '4px' }}>{itm.title}</div>
+                                                </Content>
+                                            </>
+                                        ))}
+                                    </>
+                                ))}
+                            </List>
+                            <List>
+                                {Object.keys(notToDoObj).map((item, idx) => (
+                                    <>
+                                        <Hash>
+                                            <div>#{item}</div>
+                                        </Hash>
+                                        {notToDoObj[item].map((itm, idx) => (
+                                            <>
+                                                <Content>
+                                                    <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
+                                                    <div style={{ marginBottom: '4px' }}>{itm.title}</div>
+                                                </Content>
+                                            </>
+                                        ))}
+                                    </>
+                                ))}
+                            </List>
+                        </div>
+                        <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={onChangeModalDispplay} />
+                    </TodoList>
+                </>
+            }
 
-                                </Content>
-                            </>
-                        ))}
-                    </List>
-                    <List>
-                        {not_to_do_list.map((item) => (
-                            <>
-                                <Hash>
-                                    <div>#{item.title}</div>
-                                    <img src={item.icon} style={{ height: '20px', marginLeft: '4px' }} />
-                                </Hash>
-                                <Content>
-
-                                </Content>
-                            </>
-                        ))}
-                    </List>
-                </div>
-                <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={onChangeModalDispplay} />
-            </TodoList>
             <ModalContainer display={modalDisplay} className="modal-container">
                 <ModalContentContainer className="modal-content-container">
-                    <ModalContent>
+                    <ModalContent style={{ margin: '5vh auto 0 auto' }}>
+                        <MdCancel style={{ marginLeft: 'auto', fontSize: '28px', color: theme.color.background1, cursor: 'pointer' }} onClick={onChangeModalDispplay} />
+                    </ModalContent>
+                    <ModalContent style={{ marginTop: '0' }}>
                         <ModalTitle>제목</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ModalInput style={{ width: '86%' }} className="title" />
                         </div>
                     </ModalContent>
                     <ModalContent>
+                        <ModalTitle>카테고리</ModalTitle>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <ModalSelect className="category">
+                                <option value={0}>To do</option>
+                                <option value={1}>Not To do</option>
+                            </ModalSelect>
+                        </div>
+                    </ModalContent>
+                    <ModalContent>
                         <ModalTitle>일시</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalDateInput type="date" value={selectedDate} />
+                            <ModalDateInput type="date" value={selectedDate} disabled />
                             <ModalDateInput type="time" className="start-time" />
                             <div style={{ width: '2%' }}>~</div>
-                            <ModalDateInput type="date" value={selectedDate} />
+                            <ModalDateInput type="date" value={selectedDate} disabled />
                             <ModalDateInput type="time" className="end-time" />
                         </div>
 
@@ -335,14 +376,7 @@ const Calendar = () => {
                     <ModalContent>
                         <ModalTitle>태그</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalSelect className="tag">
-                                <option value={1}>과제</option>
-                                <option value={2}>공부</option>
-                                <option value={3}>약속</option>
-                                <option value={4}>지각</option>
-                                <option value={5}>결석</option>
-                                <option value={6}>핸드폰</option>
-                            </ModalSelect>
+                            <ModalInput className="tag" placeholder="#빼고 공백없이" />
                         </div>
 
                     </ModalContent>
@@ -361,7 +395,7 @@ const Calendar = () => {
                     <ModalContent>
                         <ModalTitle>장소</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ModalInput className="place" onKeyPress={(e) => {
+                            <ModalInput className="place" placeholder="도로명주소를 입력해주세요." onKeyPress={(e) => {
                                 console.log(e.key)
                                 if (e.key == 'Enter') {
                                     geocoding();
@@ -374,11 +408,14 @@ const Calendar = () => {
                         <>
                             <ModalContent style={{ flexDirection: 'column' }}>
                                 <div>
-                                    
+
                                 </div>
                                 {addressList.map((item, idx) => (
                                     <>
-                                    <div onClick={()=>{setPlace(item)}}>{item.road_address}</div>
+                                        <div style={{ cursor: 'pointer', padding: '4px', borderRadius: '4px', background: `${item.lat == lat && item.lng == lng ? theme.color.background1 : ''}`, color: `${item.lat == lat && item.lng == lng ? '#fff' : theme.color.font2}` }}
+                                            onClick={() => { setPlace(item) }}>
+                                            {item.road_address}
+                                        </div>
                                     </>
                                 ))}
                             </ModalContent>
@@ -389,7 +426,7 @@ const Calendar = () => {
 
 
                     <ModalContent>
-                        <LogoutButton style={{ borderRadius: '50px', margin: '64px auto' }} onClick={addTodoList}>일정추가</LogoutButton>
+                        <LogoutButton style={{ borderRadius: '50px', margin: '32px auto' }} onClick={addTodoList}>일정추가</LogoutButton>
                     </ModalContent>
                 </ModalContentContainer>
             </ModalContainer>

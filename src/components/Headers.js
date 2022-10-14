@@ -55,7 +55,7 @@ const Headers = () => {
                     <Header>
                         <div>To do or Not List</div>
                         <div style={{ width: '270px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <BsBarChartLineFill style={{ cursor: 'pointer' }} />
+                            <BsBarChartLineFill style={{ cursor: 'pointer' }}  onClick={()=>navigate('/chart')}/>
                             <FaBell style={{ cursor: 'pointer' }} />
                             <AiFillSetting style={{ cursor: 'pointer' }}  onClick={()=>navigate('/setting')}/>
                             {
