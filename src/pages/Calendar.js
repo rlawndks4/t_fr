@@ -194,7 +194,6 @@ const Calendar = () => {
                 not_to_do_obj[list[i].tag].push(list[i])
             }
         }
-        console.log(to_do_obj)
         setToDoObj(to_do_obj);
         setNotToDoObj(not_to_do_obj);
         setTimeout(() => setLoading(false), 1000);
@@ -223,7 +222,6 @@ const Calendar = () => {
             if (item) {
                 setIsUpdate(true);
                 await new Promise((r) => setTimeout(r, 200));
-                console.log(item)
                 setLat(-1);
                 setLng(-1);
                 setUpdateItem({});

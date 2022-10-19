@@ -106,7 +106,6 @@ const Setting = () => {
     const { data: response } = await axios.post('/api/checkpw', {
       pw: $('.check-pw').val(),
     })
-    console.log(response)
     if (response.result < 0) {
       toast(response.message);
     } else {

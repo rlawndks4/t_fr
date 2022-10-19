@@ -34,7 +34,6 @@ const SettingDisplay = () => {
     fetchPost();
   }, [])
   const onChangeTarget = async (e) => {
-    console.log(e.target.checked)
     const { data: response } = await axios.post('/api/updatecheckismonday', {
       check: e.target.checked ? 1 : 0
     })
