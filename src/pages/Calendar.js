@@ -161,10 +161,10 @@ const Calendar = () => {
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-
+    const [isUpdate, setIsUpdate] = useState(false)
+    const [updateItem, setUpdateItem] = useState({})
     useEffect(() => {
         setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
-
     }, [])
     useEffect(() => {
         getTodoList();
@@ -194,6 +194,7 @@ const Calendar = () => {
                 not_to_do_obj[list[i].tag].push(list[i])
             }
         }
+        console.log(to_do_obj)
         setToDoObj(to_do_obj);
         setNotToDoObj(not_to_do_obj);
         setTimeout(() => setLoading(false), 1000);
@@ -207,30 +208,47 @@ const Calendar = () => {
     const onDateClick = (year, month, date, format) => {
         setSelectedDate(format)
     };
-    const onChangeModalDispplay = () => {
-        if (modalDisplay == "flex") {
-            setModalDisplay("none")
-        } else {
-            setModalDisplay("flex")
-        }
-    }
+
     const geocoding = async () => {
         const { data: response } = await axios.post('/api/getaddressbytext', {
             text: $('.place').val()
         });
         setAddressList(response.data ?? []);
     }
+    const onChangeModalDispplay = async (item) => {
+        if (modalDisplay == "flex") {
+            setModalDisplay("none")
+        } else {
+            setModalDisplay("flex")
+            if (item) {
+                setIsUpdate(true);
+                await new Promise((r) => setTimeout(r, 200));
+                console.log(item)
+                setLat(-1);
+                setLng(-1);
+                setUpdateItem({});
+                setUpdateItem(item);
+                $('.title').val(item.title);
+                $('.category').val(item.category);
+                $('.start-time').val(item.start_time);
+                $('.end-time').val(item.end_time);
+                $('.tag').val(item.tag);
+                $('.minute-ago').val(item.minute_ago);
+                $('.place').val(item.place);
+            } else {
+                setIsUpdate(false);
+            }
+        }
+    }
     const addTodoList = async () => {
         if (!$('.title').val()) {
             alert('제목을 입력해 주세요.');
         } else if (!$('.start-time').val() || !$('.end-time').val()) {
             alert('시간을 설정해 주세요.');
-        } else if (lat == -1 && lng == -1) {
-            alert('장소를 설정해 주세요.');
         } else {
             if (window.confirm("저장 하시겠습니까?")) {
                 let auth = JSON.parse(localStorage.getItem('auth'));
-                const { data: response } = await axios.post('/api/addtodo', {
+                const { data: response } = await axios.post(`/api/${isUpdate?'update':'add'}todo`, {
                     title: $('.title').val(),
                     category: $('.category').val(),
                     select_date: selectedDate,
@@ -241,7 +259,8 @@ const Calendar = () => {
                     place: placeName,
                     lat: lat,
                     lng: lng,
-                    user_pk: auth.pk
+                    user_pk: auth.pk,
+                    pk:isUpdate?updateItem.pk:undefined
                 })
                 if (response.result > 0) {
                     toast("저장이 완료되었습니다!");
@@ -254,6 +273,7 @@ const Calendar = () => {
         }
 
     }
+    
     const setPlace = (obj) => {
         setPlaceName(obj.road_address);
         setLat(obj.lat)
@@ -267,8 +287,14 @@ const Calendar = () => {
         }
         const { data: response } = await axios.post('/api/changestatus', obj)
     }
-    const deleteItem = async () => {
-
+    const deleteToto = async (pk) => {
+        if (window.confirm("정말로 삭제하시겠습니까?")) {
+            const { data: response } = await axios.delete(`/api/deletetodo/${pk}`)
+            toast(response.message);
+            if (response.result > 0) {
+                getTodoList();
+            }
+        }
     }
     return (
         <CalendarWrappers>
@@ -311,8 +337,8 @@ const Calendar = () => {
                                             <>
                                                 <Content>
                                                     <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
-                                                    <div style={{ marginBottom: '4px' }}>{itm.title}</div>
-                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={deleteItem} />
+                                                    <div style={{ marginBottom: '4px', cursor: 'pointer' }} onClick={() => { onChangeModalDispplay(itm) }}>{itm.title}</div>
+                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={() => deleteToto(itm.pk)} />
                                                 </Content>
                                             </>
                                         ))}
@@ -329,8 +355,8 @@ const Calendar = () => {
                                             <>
                                                 <Content>
                                                     <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
-                                                    <div style={{ marginBottom: '4px' }}>{itm.title}</div>
-                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={deleteItem} />
+                                                    <div style={{ marginBottom: '4px', cursor: 'pointer' }} onClick={() => { onChangeModalDispplay(itm) }}>{itm.title}</div>
+                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={() => deleteToto(itm.pk)} />
 
                                                 </Content>
                                             </>
@@ -427,7 +453,7 @@ const Calendar = () => {
 
 
                     <ModalContent>
-                        <LogoutButton style={{ borderRadius: '50px', margin: '32px auto' }} onClick={addTodoList}>일정추가</LogoutButton>
+                        <LogoutButton style={{ borderRadius: '50px', margin: '32px auto' }} onClick={addTodoList}>{isUpdate ? '일정수정' : '일정추가'}</LogoutButton>
                     </ModalContent>
                 </ModalContentContainer>
             </ModalContainer>

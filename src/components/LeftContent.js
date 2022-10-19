@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Wrappers = styled.div`
 width:${props=>props.width}%;
-height:100vh;
+min-height:100vh;
 display:flex;
 text-align:center;
 background:${props=>props.theme.color.background4};
@@ -14,6 +14,7 @@ font-size:50px;
     height:5rem;
     width:100%;
     font-size:24px;
+    display:none;
 }
 `
 const TextContent = styled.div`

@@ -6,7 +6,6 @@ import Setting from "../pages/Setting";
 import Calendar from "../pages/Calendar";
 import Chart from "../pages/Chart";
 import SettingDisplay from "../pages/Setting/SettingDisplay.js";
-import SettingAuth from "../pages/Setting/SettingAuth.js";
 const zRoute = [
     { link: '/', element: <Login />, title: "로그인" },
     { link: '/login', element: <Login />, title: "로그인" },
@@ -16,7 +15,6 @@ const zRoute = [
     { link: '/setting', element: <Setting />, title: "환경설정" },
     { link: '/calendar', element: <Calendar />, title: "캘린더" },
     { link: '/chart', element: <Chart />, title: "달성률" },
-    { link: '/settingauth', element: <SettingAuth />, title: "계정정보 수정" },
     { link: '/settingdisplay', element: <SettingDisplay />, title: "화면 수정" },
 ]
 export { zRoute }

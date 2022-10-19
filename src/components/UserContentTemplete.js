@@ -76,15 +76,15 @@ export const InputContainer = styled.div`
 display:flex;
 align-items:center;
 border-radius: 10px;
-height:84px;
+height:64px;
 background:#fff;
 width:80%;
 margin:48px auto 0 auto;
 `
 export const InputTitle = styled.div`
-width:30%;
+width:25%;
 text-align:center;
-font-size: 28px;
+font-size: 18px;
 font-weight: 600;
 color:${props => props.theme.color.background1};
 `
@@ -92,7 +92,7 @@ export const Input = styled.input`
 width:60%;
 margin:0 auto;
 border:none;
-font-size: 28px;
+font-size: 20px;
 color:${props => props.theme.color.font1};
 outline:none;
 `

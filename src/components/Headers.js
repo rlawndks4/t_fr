@@ -26,7 +26,7 @@ const Headers = () => {
     const location = useLocation();
     const [display, setDisplay] = useState(false);
     const [auth, setAuth] = useState({})
-    const ignoreList = ['/', '/login', '/register'];
+    const ignoreList = ['/', '/login', '/register','/findmyinfo'];
     useEffect(() => {
 
         if (localStorage.getItem('auth')) {
