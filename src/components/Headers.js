@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { FaBell } from 'react-icons/fa'
-import { BsBarChartLineFill } from 'react-icons/bs'
+import { BsBarChartLineFill,BsFillCalendarFill } from 'react-icons/bs'
 import { AiFillSetting } from 'react-icons/ai';
 import { LogoutButton } from "./UserContentTemplete";
 import axios from 'axios'
@@ -26,7 +26,7 @@ const Headers = () => {
     const location = useLocation();
     const [display, setDisplay] = useState(false);
     const [auth, setAuth] = useState({})
-    const ignoreList = ['/', '/login', '/register','/setting'];
+    const ignoreList = ['/', '/login', '/register'];
     useEffect(() => {
 
         if (localStorage.getItem('auth')) {
@@ -55,8 +55,8 @@ const Headers = () => {
                     <Header>
                         <div>To do or Not List</div>
                         <div style={{ width: '270px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <BsFillCalendarFill style={{ cursor: 'pointer' }} onClick={()=>navigate('/calendar')}/>
                             <BsBarChartLineFill style={{ cursor: 'pointer' }}  onClick={()=>navigate('/chart')}/>
-                            <FaBell style={{ cursor: 'pointer' }} />
                             <AiFillSetting style={{ cursor: 'pointer' }}  onClick={()=>navigate('/setting')}/>
                             {
                                 auth ?

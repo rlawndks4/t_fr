@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdCancel } from 'react-icons/md'
 import Loading from "../components/Loading";
+import { MdDelete } from 'react-icons/md'
 const TodoList = styled.div`
 width:40vw;
 min-height:90vh;
@@ -266,6 +267,9 @@ const Calendar = () => {
         }
         const { data: response } = await axios.post('/api/changestatus', obj)
     }
+    const deleteItem = async () => {
+
+    }
     return (
         <CalendarWrappers>
             <div className="calendar">
@@ -308,6 +312,7 @@ const Calendar = () => {
                                                 <Content>
                                                     <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
                                                     <div style={{ marginBottom: '4px' }}>{itm.title}</div>
+                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={deleteItem} />
                                                 </Content>
                                             </>
                                         ))}
@@ -325,6 +330,8 @@ const Calendar = () => {
                                                 <Content>
                                                     <input type={'checkbox'} name={`check-${itm.pk}`} defaultChecked={itm.status == 1 ? true : false} onChange={onChangeCheck} />
                                                     <div style={{ marginBottom: '4px' }}>{itm.title}</div>
+                                                    <MdDelete style={{ marginBottom: '4px', fontSize: '20px', cursor: 'pointer', color: theme.color.background2 }} onClick={deleteItem} />
+
                                                 </Content>
                                             </>
                                         ))}

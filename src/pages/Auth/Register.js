@@ -15,10 +15,11 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [id, setId] = useState("");
   const [name, setName] = useState("");
-
+  
   const register = async () => {
-    if (!name || !email || !password || !password2) {
+    if (!id ||!name || !email || !password || !password2) {
       return toast("모든 값을 입력해주세요!");
     }
 
@@ -28,7 +29,8 @@ function Register() {
 
     try {
       const { data: response } = await axios.post('/api/adduser', {
-        id: name,
+        id: id,
+        name: name,
         email: email,
         pw: password
       })
@@ -55,13 +57,7 @@ function Register() {
           <InputContainer>
             <InputTitle>ID</InputTitle>
             <Input onChange={(event) => {
-              setName(event.target.value);
-            }} />
-          </InputContainer>
-          <InputContainer>
-            <InputTitle>EMAIL</InputTitle>
-            <Input onChange={(event) => {
-              setEmail(event.target.value);
+              setId(event.target.value);
             }} />
           </InputContainer>
           <InputContainer>
@@ -77,6 +73,20 @@ function Register() {
             }} />
 
           </InputContainer>
+          <InputContainer>
+            <InputTitle>이름</InputTitle>
+            <Input onChange={(event) => {
+              setName(event.target.value);
+            }} />
+          </InputContainer>
+          <InputContainer>
+            <InputTitle>EMAIL</InputTitle>
+            <Input onChange={(event) => {
+              setEmail(event.target.value);
+            }} />
+          </InputContainer>
+          
+          
           <div style={{ width: '80%', margin: '8px auto', textAlign: 'end' }}>
             이미 계정이 있으신가요? <Link to="/">로그인</Link>
           </div>

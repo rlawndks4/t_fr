@@ -30,7 +30,7 @@ export default function Login() {
         localStorage.removeItem('auth');
       }
     }
-
+    isUser()
   }, []);
   const onLogin = async () => {
     if (!email || !password) {
@@ -75,6 +75,9 @@ export default function Login() {
           </InputContainer>
           <div style={{ width: '80%', margin: '8px auto', textAlign: 'end' }}>
             처음 오셨나요? <Link to="/register">회원가입</Link>
+          </div>
+          <div style={{ width: '80%', margin: '8px auto', textAlign: 'end' }}>
+            계정정보를 잊어버리셨나요? <Link to="/findmyinfo">아이디/비밀번호 찾기</Link>
           </div>
           <AuthButton onClick={onLogin}>Login</AuthButton>
         </AuthContent>

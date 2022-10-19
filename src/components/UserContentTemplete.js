@@ -57,6 +57,21 @@ border-radius: 10px;
 margin-top:48px;
 
 `
+export const AuthDiv = styled.div`
+width:100%;
+background:${props => props.theme.color.background1};
+color:${props => props.theme.color.background4};
+font-size: 24px;
+font-weight: 600;
+text-align: center;
+height:84px;
+cursor:pointer;
+border:none;
+border-radius: 10px;
+margin-top:48px;
+align-items:center;
+display:flex;
+`
 export const InputContainer = styled.div`
 display:flex;
 align-items:center;
