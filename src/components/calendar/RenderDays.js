@@ -14,7 +14,6 @@ const RenderDays = (props) => {
     let { is_monday } = props;
     const days = [];
     const date = is_monday ? ['Mon', 'Thu', 'Wed', 'Thrs', 'Fri', 'Sat', 'Sun'] : ['Sun', 'Mon', 'Thu', 'Wed', 'Thrs', 'Fri', 'Sat'];
-
     for (let i = 0; i < 7; i++) {
         days.push(
             <Days key={i}>

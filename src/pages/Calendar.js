@@ -158,18 +158,29 @@ const Calendar = () => {
     const [notToDoObj, setNotToDoObj] = useState({});
     const [addressList, setAddressList] = useState([])
     const [loading, setLoading] = useState(false);
+    const [calendarLoading, setCalendarLoading] = useState(false);
 
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [isUpdate, setIsUpdate] = useState(false)
     const [updateItem, setUpdateItem] = useState({})
+    const [auth, setAuth] = useState({});
     useEffect(() => {
         setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
     }, [])
     useEffect(() => {
         getTodoList();
     }, [selectedDate])
-
+    useEffect(() => {
+        async function fetchPost() {
+            setCalendarLoading(true)
+            const { data: response } = await axios.post('/api/getmyinfo')
+            console.log(response)
+            setAuth(response.data)
+            setCalendarLoading(false)
+        }
+        fetchPost();
+    }, [])
     const getTodoList = async () => {
         setLoading(true);
         let auth = JSON.parse(localStorage.getItem('auth'));
@@ -234,6 +245,15 @@ const Calendar = () => {
                 $('.minute-ago').val(item.minute_ago);
                 $('.place').val(item.place);
             } else {
+                setLat(-1);
+                setLng(-1);
+                $('.title').val("");
+                $('.category').val("");
+                $('.start-time').val("");
+                $('.end-time').val("");
+                $('.tag').val("");
+                $('.minute-ago').val("");
+                $('.place').val("");
                 setIsUpdate(false);
             }
         }
@@ -246,7 +266,7 @@ const Calendar = () => {
         } else {
             if (window.confirm("저장 하시겠습니까?")) {
                 let auth = JSON.parse(localStorage.getItem('auth'));
-                const { data: response } = await axios.post(`/api/${isUpdate?'update':'add'}todo`, {
+                const { data: response } = await axios.post(`/api/${isUpdate ? 'update' : 'add'}todo`, {
                     title: $('.title').val(),
                     category: $('.category').val(),
                     select_date: selectedDate,
@@ -258,7 +278,7 @@ const Calendar = () => {
                     lat: lat,
                     lng: lng,
                     user_pk: auth.pk,
-                    pk:isUpdate?updateItem.pk:undefined
+                    pk: isUpdate ? updateItem.pk : undefined
                 })
                 if (response.result > 0) {
                     toast("저장이 완료되었습니다!");
@@ -271,7 +291,7 @@ const Calendar = () => {
         }
 
     }
-    
+
     const setPlace = (obj) => {
         setPlaceName(obj.road_address);
         setLat(obj.lat)
@@ -297,17 +317,25 @@ const Calendar = () => {
     return (
         <CalendarWrappers>
             <div className="calendar">
-                <RenderHeader
-                    currentMonth={currentMonth}
-                    prevMonth={prevMonth}
-                    nextMonth={nextMonth}
-                />
-                <RenderDays />
-                <RenderCells
-                    currentMonth={currentMonth}
-                    selectedDate={selectedDate}
-                    onDateClick={onDateClick}
-                />
+                {calendarLoading ?
+                    <>
+                    </>
+                    :
+                    <>
+                        <RenderHeader
+                            currentMonth={currentMonth}
+                            prevMonth={prevMonth}
+                            nextMonth={nextMonth}
+                        />
+                        <RenderDays is_monday={auth.is_monday} />
+                        <RenderCells
+                            currentMonth={currentMonth}
+                            selectedDate={selectedDate}
+                            onDateClick={onDateClick}
+                            is_monday={auth.is_monday}
+                        />
+                    </>}
+
             </div>
             {loading ?
                 <>
@@ -363,7 +391,7 @@ const Calendar = () => {
                                 ))}
                             </List>
                         </div>
-                        <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={onChangeModalDispplay} />
+                        <img src={addImg} style={{ width: '32px', margin: '8px auto', cursor: 'pointer' }} onClick={() => onChangeModalDispplay(undefined)} />
                     </TodoList>
                 </>
             }
@@ -418,6 +446,16 @@ const Calendar = () => {
                             </ModalSelect>
                         </div>
                     </ModalContent>
+                    {isUpdate ?
+                        <>
+                            <ModalContent>
+                                수정시 장소 검색을 다시 해주세요.
+                            </ModalContent>
+                        </>
+                        :
+                        <>
+                        </>}
+
                     <ModalContent>
                         <ModalTitle>장소</ModalTitle>
                         <div style={{ display: 'flex', alignItems: 'center' }}>

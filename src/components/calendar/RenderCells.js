@@ -1,6 +1,6 @@
 import "../../styles/css/Calendar.css";
 import React, { useEffect, useState } from "react";
-import { format, addMonths, subMonths, getYear, getDate, getDay, getMonth, add, differenceInDays } from 'date-fns';
+import { format, addMonths, subMonths, getYear, getDate, getDay, getMonth, add, differenceInDays, subDays } from 'date-fns';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 import { isSameMonth, isSameDay, addDays, parse } from 'date-fns';
 import styled from "styled-components";
@@ -19,31 +19,49 @@ border-radius:4px;
 }
 `
 const RenderCells = (props) => {
-    let { currentMonth, selectedDate, onDateClick } = props;
+    let { currentMonth, selectedDate, onDateClick, is_monday } = props;
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
     const [rows, setRows] = useState([]);
     useEffect(() => {
-        let list = [];
-        let day = startDate;
-        format(day, 'yyyy-MM-dd');
-        for (var i = 0; i < 100; i++) {
-            let obj = {};
-            obj.year = getYear(day);//년
-            obj.month = getMonth(day);//월
-            obj.date = getDate(day);//일
-            obj.weeks_of_day = getDay(day);//요일
-            obj.format = format(day, 'yyyy-MM-dd');
-            list.push(obj);
-            day = addDays(day, 1)
-            if (differenceInDays(day, endDate) > 0) {
-                break;
+        async function fetchPost() {
+            let list = [];
+            let day = startDate;
+            if(getDay(monthStart)==0){
+                day = subDays(day,7)
             }
+            format(day, 'yyyy-MM-dd');
+            if (is_monday) {
+                day = addDays(day, 1);
+            }
+            for (var i = 0; i < 100; i++) {
+                let obj = {};
+                obj.day = day;
+                obj.year = getYear(day);//년
+                obj.month = getMonth(day);//월
+                obj.date = getDate(day);//일
+                obj.weeks_of_day = getDay(day);//요일
+                obj.format = format(day, 'yyyy-MM-dd');
+                list.push(obj);
+                day = addDays(day, 1);
+                if (is_monday) {
+                    if (differenceInDays(day, endDate) > 1) {
+                        break;
+                    }
+                }else{
+                    if (differenceInDays(day, endDate) > 0) {
+                        break;
+                    }
+                }
+                
+            }
+            list.pop();
+            setRows(list);
+            console.log(list)
         }
-        list.pop();
-        setRows(list);
+        fetchPost();
     }, [currentMonth])
     const returnColor = () => {
 
@@ -54,7 +72,7 @@ const RenderCells = (props) => {
                 {rows && rows.map((item, idx) => (
                     <>
                         <Card style={{
-                            color: `${item.month == getMonth(currentMonth) ? '#000' : '#ccc'}`, cursor: `${item.month == getMonth(currentMonth) ? 'pointer' : ''}`,
+                            color: `${getDay(item.day)==0 || getDay(item.day)==6 ?(getDay(item.day)==0?'#ff0000':'#0081cc'):(item.month == getMonth(currentMonth) ? '#000000' : '#cccccc')}${item.month == getMonth(currentMonth)?'ff':'99'}`, cursor: `${item.month == getMonth(currentMonth) ? 'pointer' : ''}`,
                             background: `${`${item.format}` == selectedDate ? theme.color.background4 : '#fff'}`
                         }} onClick={() => {
                             if (item.month == getMonth(currentMonth)) {
