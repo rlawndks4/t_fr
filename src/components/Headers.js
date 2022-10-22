@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { FaBell } from 'react-icons/fa'
-import { BsBarChartLineFill,BsFillCalendarFill } from 'react-icons/bs'
+import { BsBarChartLineFill, BsFillCalendarFill } from 'react-icons/bs'
 import { AiFillSetting } from 'react-icons/ai';
+import { MdLocationOn } from 'react-icons/md'
 import { LogoutButton } from "./UserContentTemplete";
 import axios from 'axios'
 const Header = styled.header`
@@ -26,13 +27,39 @@ const Headers = () => {
     const location = useLocation();
     const [display, setDisplay] = useState(false);
     const [auth, setAuth] = useState({})
-    const ignoreList = ['/', '/login', '/register','/findmyinfo'];
+    const ignoreList = ['/', '/login', '/register', '/findmyinfo'];
+    const [lat, setLat] = useState(null)
+    const [lng, setLng] = useState(null)
+    const [status, setStatus] = useState(null)
+    useEffect(() => {
+        async function fetchPosts() {
+            if (!navigator.geolocation) {
+                setStatus('Geolocation is not supported by your browser');
+            } else {
+                setStatus('Locating...');
+                await navigator.geolocation.getCurrentPosition(async (position) => {
+                    setStatus(null);
+                    setLat(position.coords.latitude);
+                    setLng(position.coords.longitude);
+                    console.log(position.coords)
+                    const {data:response} = await axios.post('/api/checklocation',{
+                        lat:position.coords.latitude,
+                        lng:position.coords.longitude
+                    });
+                }, () => {
+                    setStatus('Unable to retrieve your location');
+                });
+            }
+
+        }
+        fetchPosts()
+    }, [])
     useEffect(() => {
 
         if (localStorage.getItem('auth')) {
             let auth = JSON.parse(localStorage.getItem('auth'));
             setAuth(auth);
-        } 
+        }
         if (ignoreList.includes(location.pathname)) {
             setDisplay(false);
         } else {
@@ -54,10 +81,11 @@ const Headers = () => {
                 <>
                     <Header>
                         <div>To do or Not List</div>
-                        <div style={{ width: '270px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <BsFillCalendarFill style={{ cursor: 'pointer' }} onClick={()=>navigate('/calendar')}/>
-                            <BsBarChartLineFill style={{ cursor: 'pointer' }}  onClick={()=>navigate('/chart')}/>
-                            <AiFillSetting style={{ cursor: 'pointer' }}  onClick={()=>navigate('/setting')}/>
+                        <div style={{ width: '300px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <MdLocationOn style={{ cursor: 'pointer' }} onClick={() => window.location.reload()} />
+                            <BsFillCalendarFill style={{ cursor: 'pointer' }} onClick={() => navigate('/calendar')} />
+                            <BsBarChartLineFill style={{ cursor: 'pointer' }} onClick={() => navigate('/chart')} />
+                            <AiFillSetting style={{ cursor: 'pointer' }} onClick={() => navigate('/setting')} />
                             {
                                 auth ?
                                     <LogoutButton onClick={onLogout}>LOGOUT</LogoutButton>

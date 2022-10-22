@@ -37,7 +37,6 @@ const RenderCells = (props) => {
                 day = addDays(day, 1);
             }
             for (var i = 0; i < 100; i++) {
-                console.log(typeof getDate(day))
                 let obj = {};
                 obj.day = day;
                 obj.year = getYear(day);//년
@@ -60,7 +59,6 @@ const RenderCells = (props) => {
             }
             list.pop();
             setRows(list);
-            console.log(list)
         }
         fetchPost();
     }, [currentMonth])
