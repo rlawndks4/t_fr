@@ -5,7 +5,7 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 import { isSameMonth, isSameDay, addDays, parse } from 'date-fns';
 import styled from "styled-components";
 import theme from "../../styles/theme";
-
+import { holyDays } from "../../data/Data";
 const Card = styled.div`
 width:7.7vw;
 padding:0.3vw;
@@ -37,6 +37,7 @@ const RenderCells = (props) => {
                 day = addDays(day, 1);
             }
             for (var i = 0; i < 100; i++) {
+                console.log(typeof getDate(day))
                 let obj = {};
                 obj.day = day;
                 obj.year = getYear(day);//년
@@ -66,13 +67,25 @@ const RenderCells = (props) => {
     const returnColor = () => {
 
     }
+    const isHolyDay = (month, day) =>{
+        for(var i =0;i<holyDays.length;i++){
+            if(holyDays[i].month==parseInt(month)&&holyDays[i].day==parseInt(day)){
+                break;
+            }
+        }
+        if(holyDays.length==i){
+            return false;
+        }else{
+            return true;
+        }
+    }
     return (
         <>
             <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', justifyContent: 'space-between' }}>
                 {rows && rows.map((item, idx) => (
                     <>
                         <Card style={{
-                            color: `${getDay(item.day)==0 || getDay(item.day)==6 ?(getDay(item.day)==0?'#ff0000':'#0081cc'):(item.month == getMonth(currentMonth) ? '#000000' : '#cccccc')}${item.month == getMonth(currentMonth)?'ff':'99'}`, cursor: `${item.month == getMonth(currentMonth) ? 'pointer' : ''}`,
+                            color: `${getDay(item.day)==0 || getDay(item.day)==6 || isHolyDay(item.month+1,item.date) ?(getDay(item.day)==0||isHolyDay(item.month+1,item.date)?'#ff0000':'#0081cc'):(item.month == getMonth(currentMonth) ? '#000000' : '#cccccc')}${item.month == getMonth(currentMonth)?'ff':'99'}`, cursor: `${item.month == getMonth(currentMonth) ? 'pointer' : ''}`,
                             background: `${`${item.format}` == selectedDate ? theme.color.background4 : '#fff'}`
                         }} onClick={() => {
                             if (item.month == getMonth(currentMonth)) {
