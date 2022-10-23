@@ -179,7 +179,6 @@ const Calendar = () => {
                     setStatus(null);
                     setMyLat(position.coords.latitude);
                     setMyLng(position.coords.longitude);
-                    console.log(position.coords)
                 }, () => {
                     setStatus('Unable to retrieve your location');
                 });
@@ -198,7 +197,6 @@ const Calendar = () => {
         async function fetchPost() {
             setCalendarLoading(true)
             const { data: response } = await axios.post('/api/getmyinfo')
-            console.log(response)
             setAuth(response.data)
             setCalendarLoading(false)
         }
@@ -338,14 +336,13 @@ const Calendar = () => {
             start_time = new Date(start_time)
             end_time = new Date(end_time)
             moment = new Date(moment)
-            console.log(start_time.getTime())
-            console.log(end_time.getTime())
-            console.log(moment.getTime())
+            // console.log(start_time.getTime())
+            // console.log(end_time.getTime())
+            // console.log(moment.getTime())
             if (moment <= end_time && moment >= start_time) {
                 let x = (Math.cos(myLat) * 6400 * 2 * 3.14 / 360) * Math.abs(myLng - item.lng)
                 let y = 111 * Math.abs(myLat - item.lat)
                 let d = (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * 1000
-                console.log(d)
                 if (d <= 300) {
                 } else {
                     var checked = $(`input:checkbox[name='${e.target.name}']`).is(':checked');
