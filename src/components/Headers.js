@@ -28,32 +28,7 @@ const Headers = () => {
     const [display, setDisplay] = useState(false);
     const [auth, setAuth] = useState({})
     const ignoreList = ['/', '/login', '/register', '/findmyinfo'];
-    const [lat, setLat] = useState(null)
-    const [lng, setLng] = useState(null)
-    const [status, setStatus] = useState(null)
-    useEffect(() => {
-        async function fetchPosts() {
-            if (!navigator.geolocation) {
-                setStatus('Geolocation is not supported by your browser');
-            } else {
-                setStatus('Locating...');
-                await navigator.geolocation.getCurrentPosition(async (position) => {
-                    setStatus(null);
-                    setLat(position.coords.latitude);
-                    setLng(position.coords.longitude);
-                    console.log(position.coords)
-                    const {data:response} = await axios.post('/api/checklocation',{
-                        lat:position.coords.latitude,
-                        lng:position.coords.longitude
-                    });
-                }, () => {
-                    setStatus('Unable to retrieve your location');
-                });
-            }
-
-        }
-        fetchPosts()
-    }, [])
+    
     useEffect(() => {
 
         if (localStorage.getItem('auth')) {

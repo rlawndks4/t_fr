@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { MdCancel } from 'react-icons/md'
 import Loading from "../components/Loading";
 import { MdDelete } from 'react-icons/md'
+import { returnMoment } from '../utils/functions'
 const TodoList = styled.div`
 width:40vw;
 min-height:90vh;
@@ -159,12 +160,34 @@ const Calendar = () => {
     const [addressList, setAddressList] = useState([])
     const [loading, setLoading] = useState(false);
     const [calendarLoading, setCalendarLoading] = useState(false);
-
+    const [posts, setPosts] = useState([])
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [isUpdate, setIsUpdate] = useState(false)
     const [updateItem, setUpdateItem] = useState({})
     const [auth, setAuth] = useState({});
+    const [myLat, setMyLat] = useState(null)
+    const [myLng, setMyLng] = useState(null)
+    const [status, setStatus] = useState(null)
+    useEffect(() => {
+        async function fetchPosts() {
+            if (!navigator.geolocation) {
+                setStatus('Geolocation is not supported by your browser');
+            } else {
+                setStatus('Locating...');
+                await navigator.geolocation.getCurrentPosition(async (position) => {
+                    setStatus(null);
+                    setMyLat(position.coords.latitude);
+                    setMyLng(position.coords.longitude);
+                    console.log(position.coords)
+                }, () => {
+                    setStatus('Unable to retrieve your location');
+                });
+            }
+
+        }
+        fetchPosts()
+    }, [])
     useEffect(() => {
         setSelectedDate(format(new Date(), 'yyyy-MM-dd'))
     }, [])
@@ -189,6 +212,7 @@ const Calendar = () => {
             user_pk: auth.pk
         })
         let list = response.data ?? [];
+        setPosts(response.data ?? []);
         let to_do_obj = {};
         let not_to_do_obj = {};
         for (var i = 0; i < list.length; i++) {
@@ -298,7 +322,44 @@ const Calendar = () => {
         setLng(obj.lng)
     }
     const onChangeCheck = async (e) => {
+        let item = {
+
+        }
         let pk = parseInt(e.target.name.substring(6, e.target.name.length));
+        for (var i = 0; i < posts.length; i++) {
+            if (posts[i].pk == pk) {
+                item = posts[i]
+            }
+        }
+        if (item.lat > 0 && item.lng > 0) {
+            let start_time = item.select_date + ' ' + item.start_time;
+            let end_time = item.select_date + ' ' + item.end_time;
+            let moment = returnMoment();
+            start_time = new Date(start_time)
+            end_time = new Date(end_time)
+            moment = new Date(moment)
+            console.log(start_time.getTime())
+            console.log(end_time.getTime())
+            console.log(moment.getTime())
+            if (moment <= end_time && moment >= start_time) {
+                let x = (Math.cos(myLat) * 6400 * 2 * 3.14 / 360) * Math.abs(myLng - item.lng)
+                let y = 111 * Math.abs(myLat - item.lat)
+                let d = (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * 1000
+                console.log(d)
+                if (d <= 300) {
+                } else {
+                    var checked = $(`input:checkbox[name='${e.target.name}']`).is(':checked');
+                    $(`input:checkbox[name='${e.target.name}']`).prop('checked', !checked);
+                    toast(`거리가 ${d.toFixed(0)}M 입니다. (300M 이하 권장)`);
+                    return;
+                }
+            } else {
+                var checked = $(`input:checkbox[name='${e.target.name}']`).is(':checked');
+                $(`input:checkbox[name='${e.target.name}']`).prop('checked', !checked);
+                toast("시간이 맞지 않습니다.");
+                return;
+            }
+        }
         let obj = {
             pk: pk,
             status: e.target.checked ? 1 : 0
