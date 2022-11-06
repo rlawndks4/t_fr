@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { FaBell } from 'react-icons/fa'
+import {RiUserLocationFill} from 'react-icons/ri'
 import { BsBarChartLineFill, BsFillCalendarFill } from 'react-icons/bs'
 import { AiFillSetting } from 'react-icons/ai';
 import { MdLocationOn } from 'react-icons/md'
@@ -57,7 +58,7 @@ const Headers = () => {
                     <Header>
                         <div>To do or Not List</div>
                         <div style={{ width: '300px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <MdLocationOn style={{ cursor: 'pointer' }} onClick={() => window.location.reload()} />
+                            <RiUserLocationFill title="내 위치 가져오기" style={{ cursor: 'pointer' }} onClick={() => window.location.reload()} />
                             <BsFillCalendarFill style={{ cursor: 'pointer' }} onClick={() => navigate('/calendar')} />
                             <BsBarChartLineFill style={{ cursor: 'pointer' }} onClick={() => navigate('/chart')} />
                             <AiFillSetting style={{ cursor: 'pointer' }} onClick={() => navigate('/setting')} />
