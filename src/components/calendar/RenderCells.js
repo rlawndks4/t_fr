@@ -6,6 +6,9 @@ import { isSameMonth, isSameDay, addDays, parse } from 'date-fns';
 import styled from "styled-components";
 import theme from "../../styles/theme";
 import { holyDays } from "../../data/Data";
+import axios from "axios";
+import {AiFillHeart} from 'react-icons/ai';
+import {MdOutlineDoNotDisturb} from 'react-icons/md'
 const Card = styled.div`
 width:7.7vw;
 padding:0.3vw;
@@ -13,6 +16,8 @@ margin-left:auto;
 height:10vh;
 margin-bottom:2px;
 border-radius:4px;
+display:flex;
+flex-direction:column;
 @media screen and (max-width: 1000px) {
     height:10vw;
     width:13%;
@@ -58,7 +63,18 @@ const RenderCells = (props) => {
                 
             }
             list.pop();
+            console.log(list)
+            
+            let auth = JSON.parse(localStorage.getItem('auth'));
+            const {data:response} = await axios.post('/api/gettodocountbycanlendar',{
+                arr:list.map((item)=>item.format),
+                user_pk:auth.pk
+            })
+            for(var i = 0;i<list.length;i++){
+                list[i].count = response.data[i];
+            }
             setRows(list);
+
         }
         fetchPost();
     }, [currentMonth])
@@ -89,7 +105,28 @@ const RenderCells = (props) => {
                             if (item.month == getMonth(currentMonth)) {
                                 onDateClick(item.year, item.month, item.date, item.format)
                             }
-                        }}>{item.date}</Card>
+                        }}>
+                        <div>{item.date}</div>
+                        {window.innerWidth>=650?
+                        <>
+                        <div style={{marginTop:'auto',color:`#000000${item.month == getMonth(currentMonth)?'ff':'99'}`}}>
+                        <div style={{display:'flex',alignItems:'center'}}><AiFillHeart/><div style={{margin:'0 0 4px 4px'}}>{item.count.todo}</div></div>
+                        <div style={{display:'flex',alignItems:'center'}}><MdOutlineDoNotDisturb/><div style={{margin:'0 0 4px 4px'}}>{item.count.not_todo}</div></div>
+                        </div>
+                        </>
+                        :
+                        <>
+                        {item.count.todo>0 || item.count.not_todo>0?
+                        <>
+                        <div style={{marginTop:'auto',color:`#000000${item.month == getMonth(currentMonth)?'ff':'99'}`}}>●</div>
+                        </>
+                        :
+                        <>
+                        </>
+                        }
+                        </>}
+                        
+                        </Card>
                     </>
                 ))}
             </div>
