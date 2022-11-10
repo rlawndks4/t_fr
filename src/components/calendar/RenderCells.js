@@ -110,8 +110,15 @@ const RenderCells = (props) => {
                         {window.innerWidth>=650?
                         <>
                         <div style={{marginTop:'auto',color:`#000000${item.month == getMonth(currentMonth)?'ff':'99'}`}}>
+                        {item.count.todo>0 || item.count.not_todo>0?
+                        <>
                         <div style={{display:'flex',alignItems:'center'}}><AiFillHeart/><div style={{margin:'0 0 4px 4px'}}>{item.count.todo}</div></div>
                         <div style={{display:'flex',alignItems:'center'}}><MdOutlineDoNotDisturb/><div style={{margin:'0 0 4px 4px'}}>{item.count.not_todo}</div></div>
+                        </>
+                        :
+                        <>
+                        </>}
+                        
                         </div>
                         </>
                         :
